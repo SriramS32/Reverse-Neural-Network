@@ -5,15 +5,16 @@ import java.io.*;
 import java.util.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-//FOR CHANGING INIT SETTINGS - change input, hidden, output, cases number in main methods, and the wanted output,
+//FOR CHANGING INIT SETTINGS - change input, hidden, output, cases number in main methods, and the wanted output
 //AND IMAGE SIZES in reverse method and end of train.
+//Code that can be changed: Number of inputs, hidden, and output nodes. The bounds for weights initialization. The highest acceptable error (errorMax).
+//The learning rate and max training cycles.
 public class CreativeArtColor
 {
     private double[][] ktrainingInputs;
     private double[][] jnodes;
     private double[][] itargetOutput;
     private double[][] irealOutput;
-    //private double[][] psi;
     private double initError= .2;
     private double[][] iWeights;
     private double[][] hWeights;
@@ -32,7 +33,7 @@ public class CreativeArtColor
 
     public static void main(String[] args) throws IOException{
         Scanner in = new Scanner(System.in);
-        File file = new File("/users/Sriram/Desktop/2014-15/Neural Nets/weightsColor.txt");
+        File file = new File("weightsColor.txt");
         if (!file.exists()) file.createNewFile();
         Scanner scan = new Scanner(file);
         System.out.println("Type train or run or reverse");
@@ -55,7 +56,7 @@ public class CreativeArtColor
             for(int n =0;n<cases;n++)
             {
                 images[n] = null;
-                File f = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image" + n + ".jpg");
+                File f = new File("image" + n + ".jpg");
                 images[n] = ImageIO.read(f);
                 int width = images[n].getWidth();
                 int height = images[n].getHeight();
@@ -70,24 +71,17 @@ public class CreativeArtColor
                         jCount++;
                         int p = images[n].getRGB(jCount, i);
 
-                        //int a = (p>>24)&0xff;
                         int r = (p>>16)&0xff;
                         int g = (p>>8)&0xff;
                         int b = p & 0xff;
-                        //int sum = (int)Math.round((r*0.3 + g*0.589 + b*0.11));
+                        //int sum = (int)Math.round((r*0.3 + g*0.589 + b*0.11)) //for grayscale;
                         //CONSIDER PUTTING IN THE 255 inverter
-                        //p = (a<<24) | (r<<16) | (g<<8) | b;
-                        //p = (a<<24) | (0<<16) | (g<<8) | 0;
                         ktrainingInputs1[n][j+i*(width*3)]=r;
                         j++;
                         ktrainingInputs1[n][j+i*(width*3)]=g;
                         j++;
                         ktrainingInputs1[n][j+i*(width*3)]=b;
-
-                        //ktrainingInputs1[n][j+i*width]=sum;
-
                         //Change based on what the desired input is
-                        //System.out.println(g);
                     }
 
                 }
@@ -101,7 +95,7 @@ public class CreativeArtColor
             //setting ideal output and initializing real output and hidden layer
 
             autobot.changeWeights();
-            //training the weights to then print out the weights to file
+            //changeWeights() calls the main training algorith -> training the weights to then print out the weights to file
             iWeights1=autobot.getIWeights();
             hWeights1=autobot.getHWeights();
             for (int j=0;j<Hidden;j++)
@@ -120,8 +114,7 @@ public class CreativeArtColor
                 }
             }
             bout.close();
-            System.out.println("Done");
-            //autobot.printWeightMap(cases,74,74);
+            System.out.println("Trained...");
         }
         else if (t.equals("run"))
         {
@@ -155,7 +148,7 @@ public class CreativeArtColor
             for(int n =0;n<cases;n++)
             {
                 images[n] = null;
-                File f = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image" + n + ".jpg");
+                File f = new File("image" + n + ".jpg");
                 images[n] = ImageIO.read(f);
 
                 int width = images[n].getWidth();
@@ -175,23 +168,15 @@ public class CreativeArtColor
                         jCount++;
                         int p = images[n].getRGB(jCount, i);
 
-                        //int a = (p>>24)&0xff;
                         int r = (p>>16)&0xff;
                         int g = (p>>8)&0xff;
                         int b = p & 0xff;
-                        //int sum = (int)Math.round((r*0.3 + g*0.589 + b*0.11));
 
-                        //p = (a<<24) | (r<<16) | (g<<8) | b;
-                        //p = (a<<24) | (0<<16) | (g<<8) | 0;
-                        //ktrainingInputs1[n][j+i*width]=g;
-                        //ktrainingInputs1[n][j+i*width]=sum;
                         ktrainingInputs1[n][j+i*(width*3)]=r;
                         j++;
                         ktrainingInputs1[n][j+i*(width*3)]=g;
                         j++;
                         ktrainingInputs1[n][j+i*(width*3)]=b;
-                        //System.out.println(g);
-                        //img.setRGB(j,i,p);
                     }
 
                 }
@@ -200,7 +185,7 @@ public class CreativeArtColor
             autobot.setInput(ktrainingInputs1);
             //setting ideal output
 
-            autobot.propagateNet(cases); //with 5 cases
+            autobot.propagateNet(cases); //with number of cases as a parameter
             double[][] irealOutput1 = autobot.getOutput();
             for (int n =0;n<cases;n++) {
                 for (int i=0;i<Output;i++) {
@@ -211,8 +196,6 @@ public class CreativeArtColor
         }
         else if(t.equals("reverse"))
         {
-            //BufferedWriter bout = new BufferedWriter(new FileWriter(file2));
-
             for (int j=0;j<Hidden;j++)
             {
                 for (int k=0;k<Input;k++)
@@ -234,7 +217,6 @@ public class CreativeArtColor
             CreativeArtColor autobot = new CreativeArtColor(iWeights1,hWeights1);
 
             //taking in the inputs
-            //cases=4;
             double[][] ktrainingInputs1 = new double[cases][Input];
             //initialized and then set the input nodes
             autobot.setInput(ktrainingInputs1);
@@ -256,8 +238,7 @@ public class CreativeArtColor
 
             for(int n=0;n<cases;n++)
             {
-                //File f = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image.jpg");
-                File f = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image" + n + ".jpg");
+                File f = new File("image" + n + ".jpg");
 
                 //images[n] = new BufferedImage(width,height,3);
                 //argb style, check later for third type into buffered image
