@@ -17,15 +17,16 @@ public class CreativeArtColor
     private double[][] itargetOutput;
     private double[][] irealOutput;
     private double initError= .2;
+    private double initErrorNodes = 0.99;
     private double[][] iWeights;
     private double[][] hWeights;
     public static final int cases = 4;
     public static final int Input = 270000;
     public static final int Hidden = 15;
     public static final int Output = 1;
-    public static final double errorMax = .000001;
+    public static final double errorMax = .0001;
     public static final int baseError = 20;
-    public static final int maxCycles = 800; 
+    public static final int maxCycles = 200; 
     public static final double lowerB = -1.0;
     public static final double middleB = 0.0;
     public static final double upperB = 1.0;
@@ -57,7 +58,7 @@ public class CreativeArtColor
             propagateNet(cases);
             train();
             currError=error();
-            if(currCycles%20==0) System.out.println(currError);
+            if(currCycles%20==0) System.out.println("Epoch " + currCycles + " Error: " + currError);
             currCycles++;
         }
         System.out.println("Final Error: " + currError);
@@ -97,7 +98,7 @@ public class CreativeArtColor
     }
 
     /*
-    Purpose: 	1. Initializes input nodes through randomization until the error is below a threshold initError
+    Purpose: 	1. Initializes input nodes through randomization until the error is below a threshold initErrorNodes
     			2. Trains network until error is below errorMax
     */
     public void changeNodes()
@@ -109,7 +110,7 @@ public class CreativeArtColor
         int currCycles = 0;
         //this does the randomization unless we get weights with errors resulting less than the start max
 
-        while(currError>initError && currCycles<maxCycles)
+        while(currError>initErrorNodes && currCycles<maxCycles)
         {
             initializeNodes();
             propagateNet(cases);
@@ -127,7 +128,7 @@ public class CreativeArtColor
             currError=error();
             if(currCycles%20==0) 
             {
-                System.out.println(currError);
+                System.out.println("Epoch " + currCycles + " Error: " + currError);
                 //printStuff(currCycles);
             }
             currCycles++;
@@ -339,7 +340,8 @@ public class CreativeArtColor
                     System.out.println("Case " + n + " Output " + i + ": " + irealOutput1[n][i]);
                 }
             }
-            System.out.println("Done");
+            System.out.println("Artwork is a 1, control backgrounds is a 0"); //If default image set with two pictures and two backgrounds
+            System.out.println("Cases ran");
         }
         else if(t.equals("reverse"))
         {
