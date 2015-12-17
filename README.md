@@ -7,6 +7,9 @@ Hello!
 **Repository** contains
 - CreativeArtColor.java contains the main neural network code that implements the creation of input functionality
 - CreativeArtColor.class is a compiled version of the java file
+- Sample image set of image0.jpg...image3.jpg, combining Starry Night with The Scream with white and black as control backgrounds.
+- weightsColor.txt is a sample weights file, if you would like to run and reverse immediately without training (which takes the longest time)
+The default parameters in the java file are set for these images, with a quarter million inputs per image (300 by 300)
 
 **Repository** requires
 - A data set composing of images (in the format of image0...imagen)
@@ -24,9 +27,15 @@ Common application to Synthesis: A value such as a 1 is assigned to any piece of
 
 An example of usage:
 ```javascript
-//In command line
+//In command line, after downloading all files in one directory and cd into that directory
 javac CreativeArtColor.java //to compile file and create CreativeArtColor.class
 java CreativeArtColor //runs program
+
+train 	//will first train the network based on image set, epoch errors will be printed out
+run 	//will evaluate the image set with trained network
+reverse //will reverse network and create an image
+
+//Note: Optimization of parameters can be performed, runs faster for me on blueJ rather than terminal, may want to change accepted error to prune clarity of image
 ```
 
 #Future Plans
