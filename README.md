@@ -29,10 +29,14 @@ An example of usage:
 ```javascript
 //In command line, after downloading all files in one directory and cd into that directory
 javac CreativeArtColor.java //to compile file and create CreativeArtColor.class
-java CreativeArtColor //runs program
 
+java CreativeArtColor //runs program
 train 	//will first train the network based on image set, epoch errors will be printed out
+
+java CreativeArtColor
 run 	//will evaluate the image set with trained network
+
+java CreativeArtColor
 reverse //will reverse network and create an image
 
 //Note: Optimization of parameters can be performed, runs faster for me on blueJ rather than terminal, may want to change accepted error to prune clarity of image
