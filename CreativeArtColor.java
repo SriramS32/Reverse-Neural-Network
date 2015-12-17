@@ -5,10 +5,11 @@ import java.io.*;
 import java.util.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-//FOR CHANGING INIT SETTINGS - change input, hidden, output, cases number in main methods, and the wanted output
-//AND IMAGE SIZES in reverse method and end of train.
-//Code that can be changed: Number of inputs, hidden, and output nodes. The bounds for weights initialization. The highest acceptable error (errorMax).
-//The learning rate and max training cycles.
+
+//The major methods are changeWeights(), train(), trainNodes(), changeNodes(). The main method takes up a lot of space due to processing of RGB image files.
+
+//FOR CHANGING INITIAL SETTINGS - change Input, Didden, Output, cases static final parameters, wanted output (in setOut()), and image sizes (in main function)
+
 public class CreativeArtColor
 {
     private double[][] ktrainingInputs;
@@ -18,8 +19,8 @@ public class CreativeArtColor
     private double initError= .2;
     private double[][] iWeights;
     private double[][] hWeights;
-    private static int cases;
-    public static final int Input = 16428;
+    public static final int cases = 4;
+    public static final int Input = 270000;
     public static final int Hidden = 15;
     public static final int Output = 1;
     public static final double errorMax = .000001;
@@ -31,6 +32,155 @@ public class CreativeArtColor
     public static final double upperPB = 255.0;
     public static final double learningRate = 0.25;
 
+    /*
+    Purpose: 	1. Initializes weights through randomization until the error is below a threshold initError
+    			2. Trains network until error is below errorMax
+    */
+    public void changeWeights()
+    {
+        double[][] tempNodes;
+        //loop over all the inputs (how many cases or pictures and such)
+        double currError =1;
+        int currCycles = 0;
+        //this does the randomization unless we get weights with errors resulting less than the start max
+        while(currError>initError && currCycles<maxCycles)
+        {
+            initializeWeights();
+            propagateNet(cases);
+            currError=error();
+            currCycles++;
+        }
+        System.out.println("Initial Error: " + currError);
+        currCycles = 0;
+        while(currError>errorMax && currCycles<maxCycles)
+        {
+            propagateNet(cases);
+            train();
+            currError=error();
+            if(currCycles%20==0) System.out.println(currError);
+            currCycles++;
+        }
+        System.out.println("Final Error: " + currError);
+        return;
+    }
+
+    /*
+    Purpose: 	1. Iterates over all of the image cases
+    			2. Implements backpropagation by changing weights for deeper hidden layer weights first and saving terms for earlier hidden layer weights
+    			3. In doing so, trains weights
+    */
+    public void train()
+    {
+        for(int n=0;n<cases;n++)
+        {
+            //double[] thetai=new double[Output];
+            double[] omegai=new double[Output];
+            double[] psii = new double[Output];
+            double[] bigOmega = new double[Hidden];
+            for (int j=0;j<Hidden;j++) {
+                for (int i=0;i<Output;i++) {
+                    omegai[i]= itargetOutput[n][i]-irealOutput[n][i];
+                    psii[i]=omegai[i]*dervActivation(irealOutput[n][i]);
+                    hWeights[i][j]+=learningRate*psii[i]*jnodes[n][j];
+                    bigOmega[j]+=psii[i]*hWeights[i][j];
+                }
+
+            }
+            for (int k=0;k<Input;k++) {
+                for (int j=0;j<Hidden;j++) {
+                    iWeights[j][k]+=learningRate*bigOmega[j]*ktrainingInputs[n][k]*dervActivation(jnodes[n][j]);
+                }
+            }
+
+        }
+        return;
+    }
+
+    /*
+    Purpose: 	1. Initializes input nodes through randomization until the error is below a threshold initError
+    			2. Trains network until error is below errorMax
+    */
+    public void changeNodes()
+    //only diff is calling the diff train method, diff initialize method
+    {
+        //double[][] tempNodes;
+        //loop over all the inputs (how many cases or pictures and such)
+        double currError =5;
+        int currCycles = 0;
+        //this does the randomization unless we get weights with errors resulting less than the start max
+
+        while(currError>initError && currCycles<maxCycles)
+        {
+            initializeNodes();
+            propagateNet(cases);
+            currError=error();
+            //System.out.println(currError);
+            currCycles++;
+            //printStuff(1000);
+        }
+        System.out.println("Initial Error: " + currError);
+        currCycles = 0;
+        while(currError>errorMax && currCycles<maxCycles)
+        {
+            propagateNet(cases);
+            trainNodes();
+            currError=error();
+            if(currCycles%20==0) 
+            {
+                System.out.println(currError);
+                //printStuff(currCycles);
+            }
+            currCycles++;
+        }
+        System.out.println("Final Error: " + currError);
+        return;
+    }
+
+    /*
+    Purpose: 	1. Iterates over all of the image cases
+    			2. Implements backpropagation by changing node values for deeper hidden layer nodes first and saving terms for earlier nodes
+    			3. In doing so, trains nodes. It changes the inputs through training based on desired outputs and its current weight set.
+    			Note: Very similar algorithm to training weights, but certain terms have been changed based on the partial derivative with respect to input calculations of minimization of error
+    */
+    public void trainNodes()
+    {
+        for(int n=0;n<cases;n++)
+        {
+            //double[] thetai=new double[Output];
+            double[] omegai=new double[Output];
+            double[] psii = new double[Output];
+            double[] bigOmega = new double[Hidden];
+            for (int j=0;j<Hidden;j++) {
+                for (int i=0;i<Output;i++) {
+                    omegai[i]= itargetOutput[n][i]-irealOutput[n][i];
+                    psii[i]=omegai[i]*dervActivation(irealOutput[n][i]);
+                    jnodes[n][j] +=learningRate*psii[i]*hWeights[i][j];
+                    //may need to take the hidden calculation out, depending
+                    bigOmega[j]+=psii[i]*hWeights[i][j];
+                }
+
+            }
+            for (int k=0;k<Input;k++) {
+                for (int j=0;j<Hidden;j++) {
+                    ktrainingInputs[n][k]+=learningRate*bigOmega[j]*iWeights[j][k]*dervActivation(jnodes[n][j]);
+                }
+            }
+        }
+        return;
+    }
+
+    //Purpose: to set the desired outputs based on the image set in the folder that this file is located in
+    public void setOut()
+    {
+        itargetOutput = new double[][] {{1.0},{1.0},{0.0},{0.0}};
+        //Make sure this has new outputs updated
+    }
+
+    /*
+    Purpose: 	1. "train" - Creates a new neural network and trains a set of weights and prints to a file
+    			2. "run" - Uses a previously created weight set in a file to create a network and propagates image inputs through that network
+    			3. "reverse" - Uses a previously created weight set in a file and trains image inputs based on the constant weights, creating image files
+    */
     public static void main(String[] args) throws IOException{
         Scanner in = new Scanner(System.in);
         File file = new File("weightsColor.txt");
@@ -47,8 +197,6 @@ public class CreativeArtColor
             autobot.initializeWeights();
             //Made a buffered writer and an object of this class and initialized weights randomly
 
-            //taking in the input cases
-            cases=5;
             double[][] ktrainingInputs1 = new double[cases][Input];
             //initializes a double array for inputs and then puts a combination of rgb value of picture into inputs
             BufferedImage[] images = new BufferedImage[cases];
@@ -136,8 +284,7 @@ public class CreativeArtColor
                 }
             }
 
-            //getting in all the inputs that will be propagated to check output
-            cases=5;
+            //getting in all the input weights that will be propagated to check output
             CreativeArtColor autobot = new CreativeArtColor(iWeights1,hWeights1);
             //need to set cases first, because of constructor
             double[][] ktrainingInputs1 = new double[cases][Input];
@@ -185,7 +332,7 @@ public class CreativeArtColor
             autobot.setInput(ktrainingInputs1);
             //setting ideal output
 
-            autobot.propagateNet(cases); //with number of cases as a parameter
+            autobot.propagateNet(cases);
             double[][] irealOutput1 = autobot.getOutput();
             for (int n =0;n<cases;n++) {
                 for (int i=0;i<Output;i++) {
@@ -212,8 +359,6 @@ public class CreativeArtColor
                 }
             }
 
-            //
-            cases=5;
             CreativeArtColor autobot = new CreativeArtColor(iWeights1,hWeights1);
 
             //taking in the inputs
@@ -230,8 +375,8 @@ public class CreativeArtColor
 
             double[][] ktrainingInputs2 = autobot.getInputs();
 
-            int height = 74;
-            int width = 74;
+            int height = 300;
+            int width = 300;
             //int bWidth = 100*3;
             BufferedImage[] images = new BufferedImage[cases];
             //Set to be as what the image is, can later change to be fed in.
@@ -307,7 +452,7 @@ public class CreativeArtColor
                         //images[n].setRGB(j,i,p);
                     }
                 }
-                File f1 = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image" + n + "Output.jpg");
+                File f1 = new File("image" + n + "Output.jpg");
                 ImageIO.write(images[n], "gif", f1);
             }
             //bout.close();
@@ -323,7 +468,7 @@ public class CreativeArtColor
         for (int n = 0; n<cases; n++)
         {   
             BufferedImage[] images = new BufferedImage[Hidden];
-            File f = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image" + n + ".jpg");
+            File f = new File("image" + n + ".jpg");
             try{
                 images[n] = ImageIO.read(f);}
             catch(IOException e)
@@ -346,7 +491,7 @@ public class CreativeArtColor
                     images[n].setRGB(currentL, currentH, p);
                 }
             }
-            File f1 = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image" + n + "WeightOutput.jpg");
+            File f1 = new File("image" + n + "WeightOutput.jpg");
             try{ImageIO.write(images[n],"gif", f1);}
             catch(IOException e){}
         }
@@ -361,13 +506,6 @@ public class CreativeArtColor
     public void initHid(int c)
     {
         jnodes = new double[c][Hidden];
-    }
-
-    public void setOut()
-    {
-        itargetOutput = new double[][] {{1.0},{1.0},{1.0},{0.0},{1.0}};
-        //itargetOutput = new double[][] {{1.0},{1.0},{1.0},{0.0},{1.0},{1.0},{1.0},{1.0},{1.0},{1.0},{1.0},{1.0}};
-        //Make sure this has new outputs updated
     }
 
     public double[][] getOutput()
@@ -387,11 +525,11 @@ public class CreativeArtColor
         jnodes = new double[cases][Hidden];
     }
 
+    //Meant to be able to print a video of neural network drawing images, Currently not used
     public void printStuff(int count)
     {
         int n=0;
-        //File f = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image.jpg");
-        File f = new File("/users/Sriram/Desktop/2014-15/Neural Nets/image0.jpg");
+        File f = new File("image0.jpg");
 
         //images[n] = new BufferedImage(width,height,3);
         //argb style, check later for third type into buffered image
@@ -464,7 +602,7 @@ public class CreativeArtColor
                 img.setRGB(j,i,p);
             }
         }
-        File f1 = new File("/users/Sriram/Desktop/2014-15/Neural Nets/VideoReal/" + count + "Output.jpg");
+        File f1 = new File("VideoReal" + count + "Output.jpg");
         try{
             ImageIO.write(img, "gif", f1);
         }
@@ -511,6 +649,7 @@ public class CreativeArtColor
                 //System.out.println("ktrainingInputs[j][k]: " + ktrainingInputs[j][k]);
             }
         }
+        //This part is if you want to initialize hidden nodes as well for implications initial learning calculations
         /*    
         for(int i=0;i<cases;i++)
         {
@@ -597,15 +736,12 @@ public class CreativeArtColor
     public double error()
     {
         /*
-        yea, set an error 0 and then sum equals consistent squares of diff between target and calculated,
+        set an error 0 and then sum equals consistent squares of diff between target and calculated,
         uses a temp variable to hold the evaluated inputs. Correct indices.
          */
         double error = 0.0;
-        //double[][] calcOutput = new double[Input][];
         for(int n=0;n<cases;n++)
         {
-            //double[][] temp=jnodes;
-            //calcOutput[k]=temp[Hidden-1];
             for (int i=0;i<Output;i++) {
                 error+=Math.pow((itargetOutput[n][i]-irealOutput[n][i]),2);
             }
@@ -620,125 +756,6 @@ public class CreativeArtColor
             calculateHidden(ktrainingInputs[n],n);
             calculateOutput(jnodes[n],n);
         }
-        return;
-    }
-
-    public void changeWeights()
-    {
-        double[][] tempNodes;
-        //loop over all the inputs (how many cases or pictures and such)
-        double currError =1;
-        int currCycles = 0;
-        //this does the randomization unless we get weights with errors resulting less than the start max
-        while(currError>initError && currCycles<maxCycles)
-        {
-            initializeWeights();
-            propagateNet(cases);
-            currError=error();
-            currCycles++;
-        }
-        System.out.println("Initial Error: " + currError);
-        currCycles = 0;
-        while(currError>errorMax && currCycles<maxCycles)
-        {
-            propagateNet(cases);
-            train();
-            //THIS MAY HAVE TO BE SWITCHED BECAUSE TRAIN NEEDS TO USE PROPAGTE NET FIRST
-            currError=error();
-            if(currCycles%20==0) System.out.println(currError);
-            currCycles++;
-        }
-        System.out.println("Final Error: " + currError);
-        return;
-    }
-
-    public void train()
-    {
-        for(int n=0;n<cases;n++)
-        {
-            //double[] thetai=new double[Output];
-            double[] omegai=new double[Output];
-            double[] psii = new double[Output];
-            double[] bigOmega = new double[Hidden];
-            for (int j=0;j<Hidden;j++) {
-                for (int i=0;i<Output;i++) {
-                    omegai[i]= itargetOutput[n][i]-irealOutput[n][i];
-                    psii[i]=omegai[i]*dervActivation(irealOutput[n][i]);
-                    hWeights[i][j]+=learningRate*psii[i]*jnodes[n][j];
-                    bigOmega[j]+=psii[i]*hWeights[i][j];
-                }
-
-            }
-            for (int k=0;k<Input;k++) {
-                for (int j=0;j<Hidden;j++) {
-                    iWeights[j][k]+=learningRate*bigOmega[j]*ktrainingInputs[n][k]*dervActivation(jnodes[n][j]);
-                }
-            }
-
-        }
-        return;
-    }
-
-    public void trainNodes()
-    {
-        for(int n=0;n<cases;n++)
-        {
-            //double[] thetai=new double[Output];
-            double[] omegai=new double[Output];
-            double[] psii = new double[Output];
-            double[] bigOmega = new double[Hidden];
-            for (int j=0;j<Hidden;j++) {
-                for (int i=0;i<Output;i++) {
-                    omegai[i]= itargetOutput[n][i]-irealOutput[n][i];
-                    psii[i]=omegai[i]*dervActivation(irealOutput[n][i]);
-                    jnodes[n][j] +=learningRate*psii[i]*hWeights[i][j];
-                    //may need to take the hidden calculation out, depending
-                    bigOmega[j]+=psii[i]*hWeights[i][j];
-                }
-
-            }
-            for (int k=0;k<Input;k++) {
-                for (int j=0;j<Hidden;j++) {
-                    ktrainingInputs[n][k]+=learningRate*bigOmega[j]*iWeights[j][k]*dervActivation(jnodes[n][j]);
-                }
-            }
-        }
-        return;
-    }
-
-    public void changeNodes()
-    //only diff is calling the diff train method, diff initialize method
-    {
-        //double[][] tempNodes;
-        //loop over all the inputs (how many cases or pictures and such)
-        double currError =5;
-        int currCycles = 0;
-        //this does the randomization unless we get weights with errors resulting less than the start max
-
-        while(currError>initError && currCycles<maxCycles)
-        {
-            initializeNodes();
-            propagateNet(cases);
-            currError=error();
-            //System.out.println(currError);
-            currCycles++;
-            //printStuff(1000);
-        }
-        System.out.println("Initial Error: " + currError);
-        currCycles = 0;
-        while(currError>errorMax && currCycles<maxCycles)
-        {
-            propagateNet(cases);
-            trainNodes();
-            currError=error();
-            if(currCycles%20==0) 
-            {
-                System.out.println(currError);
-                //printStuff(currCycles);
-            }
-            currCycles++;
-        }
-        System.out.println("Final Error: " + currError);
         return;
     }
 }
