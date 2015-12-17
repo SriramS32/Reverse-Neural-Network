@@ -42,6 +42,7 @@ reverse //will reverse network and create an image
 //Note: Optimization of parameters can be performed, runs faster for me on blueJ rather than terminal, may want to change accepted error to prune clarity of image
 ```
 An example output image after reversing looks like this:
+
 ![id](https://raw.githubusercontent.com/SriramS32/Reverse-Neural-Network/master/ExampleSynthesis.jpg)
 
 #Future Plans
