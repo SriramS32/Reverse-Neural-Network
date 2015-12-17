@@ -41,11 +41,11 @@ reverse //will reverse network and create an image
 
 //Note: Optimization of parameters can be performed, runs faster for me on blueJ rather than terminal, may want to change accepted error to prune clarity of image
 ```
-An example output image after reversing looks like this:
+An example output image after reversing looks like this (synthesis of The Scream and Starry Night):
 
 ![id](https://raw.githubusercontent.com/SriramS32/Reverse-Neural-Network/master/ExampleSynthesis.jpg)
 
 #Future Plans
 Currently the code is only applied to a small database of images, but it could easily expand to other realms of neural network application. The math could be reapplied to other networks such as CNNs or RNNs and phoneme analysis and pattern identification beyond computer vision. Other patterns could be explored besides synthesis.
 
-Sriram Somasundaram
+Sriram Somasundaram :)
