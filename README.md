@@ -2,7 +2,7 @@
 
 Hello!
 
-**Background** I started building this project in March on my computer while learning about how to code neural network based computer vision from scratch. Eventually, I wanted to create a neural network that could reverse back inputs. In terms of computer vision, this meant asking for a specific image that the network has recognized. The progression of work is in the project named ReverseNNDevelopment.
+**Background:** I started building this project from scratch in March when I was interested in coding neural network-based computer vision. Eventually, I wanted to create a neural network that could produce images rather than just recognizing images. In terms of computer vision, this meant asking for the input pixels of a specific image that the network has recognized. The progression of work is in the project named ReverseNNDevelopment.
 
 **Repository** contains
 - CreativeArtColor.java contains the main neural network code that implements the creation of input functionality
@@ -23,7 +23,7 @@ The neural network is a simple multilayer perception that uses a logistic activa
 
 Back-propagation is implemented in both training and reversing.
 
-Common application to Synthesis: A value such as a 1 is assigned to any piece of art from van Gogh. A 0 is assigned to background images such as a square of white and black. When the program is asked to train the inputs to achieve an output of 1, it will appear to draw a synthesized van Gogh image.
+Common application to Synthesis: A value such as a 1 is assigned to any piece of art. A 0 is assigned to background images such as a square of white and black. When the program is asked to train the inputs to achieve an output of 1, it will appear to draw a synthesized artwork image.
 
 An example of usage:
 ```javascript
