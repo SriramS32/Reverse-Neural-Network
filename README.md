@@ -48,4 +48,7 @@ An example output image after reversing looks like this (synthesis of The Scream
 #Future Plans
 Currently the code is only applied to a small database of images, but it could easily expand to other realms of neural network application. The math could be reapplied to other networks such as CNNs or RNNs and phoneme analysis and pattern identification beyond computer vision. Other patterns could be explored besides synthesis.
 
+#License
+BSD
+
 Sriram Somasundaram :)
