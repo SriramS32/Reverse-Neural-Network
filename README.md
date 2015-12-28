@@ -45,6 +45,8 @@ Back-propagation is implemented in both training and reversing.
 
 Common application to Synthesis: A value such as a 1 is assigned to any piece of art. A 0 is assigned to background images such as a square of white and black. When the program is asked to train the inputs to achieve an output of 1, it will appear to draw a synthesized artwork image.
 
+For more information, see website.
+
 #Future Plans
 Currently the code is only applied to a small database of images, but it could easily expand to other realms of neural network application. The math could be reapplied to other networks such as CNNs or RNNs and phoneme analysis and pattern identification beyond computer vision. Other patterns could be explored besides synthesis.
 
