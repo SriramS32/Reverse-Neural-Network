@@ -17,7 +17,7 @@ The default parameters in the java file are set for these images, with a quarter
 
 An example of usage:
 ```javascript
-//In command line, after downloading all files in one directory and cd into that directory
+//In command line, download all files in one directory and cd into that directory
 javac CreativeArtColor.java //to compile file and create CreativeArtColor.class
 
 java CreativeArtColor //runs program
