@@ -2,16 +2,18 @@
 
 Hello!
 
-**Background:** I started building this project from scratch in March when I was interested in coding neural network-based computer vision. Eventually, I wanted to create a neural network that could produce images rather than just recognizing images. In terms of computer vision, this meant asking for the input pixels of a specific image that the network has recognized. The progression of work is in the project named ReverseNNDevelopment.
+## Background
+I started building this project from scratch in March 2015 when I was interested in coding neural network-based computer vision. Eventually, I wanted to create a neural network that could produce images rather than just recognizing images. In terms of computer vision, this meant asking for the input pixels of a specific image that the network has recognized. The progression of work is in the project named ReverseNNDevelopment.
 
-**Repository** contains
+## Repository
+**Repo contains**
 - CreativeArtColor.java contains the main neural network code that implements the creation of input functionality
 - CreativeArtColor.class is a compiled version of the java file
 - Sample image set of image0.jpg...image3.jpg, combining Starry Night with The Scream with white and black as control backgrounds.
 - weightsColor.txt is a sample weights file, if you would like to run and reverse immediately without training (which takes the longest time)
 The default parameters in the java file are set for these images, with a quarter million inputs per image (300 by 300)
 
-**Repository** requires
+**Repo requires**
 - A data set composing of images (in the format of image0...imagen)
 - Updates of parameters such as changing input, hidden, and output nodes based on the size of image or complexity of network. Also, will need to update the number of cases based on the number of images in image set.
 
@@ -35,7 +37,7 @@ An example output image after reversing looks like this (synthesis of The Scream
 
 ![id](https://raw.githubusercontent.com/SriramS32/Reverse-Neural-Network/master/ExampleSynthesis.jpg)
 
-#Explanation of Theory
+## Explanation of Theory
 The neural network is a simple multilayer perception that uses a logistic activation function and stochastically updates the weights. The network has 3 options:
 - **train:** A new network is trained over a data set, the weights of the neural network are saved to a text file.
 - **run:** Networks can be created from weight files and run on test images.
@@ -47,14 +49,10 @@ Common application to Synthesis: A value such as a 1 is assigned to any piece of
 
 For more information, see website.
 
-#Future Plans
+#### Future Plans
 Currently the code is only applied to a small database of images, but it could easily expand to other realms of neural network application. The math could be reapplied to other networks such as CNNs or RNNs and phoneme analysis and pattern identification beyond computer vision. Other patterns could be explored besides synthesis.
 
-#License
+**License**
 BSD
 
 Sriram Somasundaram :)
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/SriramS32/reverse-neural-network/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
